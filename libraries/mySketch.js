@@ -7,21 +7,20 @@ let sceneCounter = 1;
 var jerry;
 let bg;
 var s;
-var score = 0;
-
-let j;
+var score = -1;
+let lives = 5;
+let bulletSprite;
+let end = false;
+let pause = false;
 
 /////
 
 var i=0;
 var x1=710;
 var y1=700;
-var go=0;
 var arr=[];
-var shooting;
 var bulletx=1000;
 var bullety=1000;
-  //
 
 function preload() {
   TJ = loadImage("tomBG.jpg"); //All Background Images TV Show settings 
@@ -36,79 +35,127 @@ function preload() {
   xirod = loadFont("xirod.ttf"); //Title Font
   start = loadImage("startbutton.png");
 
-//   jerry = createSprite(305, 300, 100, 100);
-//   //jerry.addImage(loadImage("jerry2.png"));
-
-//   jerry2 = createSprite(1005, 300);
-//   jerry2.addImage(loadImage("jerry2.png"));
-
-//   jerry3 = createSprite(1605, 300);
-//   jerry3.addImage(loadImage("jerry2.png"));
 }
 
 
 function setup() {
   createCanvas(1920,1080);
   background(115);
+  bulletSprite = createSprite(0,0, 50,50); //Creates Bullet Sprite behind water balloon
+   jerry = createSprite(0, 0, 100, 100); //Creates Jerry Sprite 
+    jerry.addImage(loadImage("jerry2.png"));
 }
 
 
 function draw() {
-  if (scene1 == true) //Start Screen
+  if (pause == false) 
   {
-   textSize(125);
-   textFont(xirod);
-   text('THE GREAT WATER', 70, 340);
-   text('BALLOON FIGHT', 220, 440);
-   image(start, 630,500, 600, 250); //Start button
-  }
+    if (scene1 == true) //Start Screen
+    {
+     textSize(125);
+     textFont(xirod);
+     text('THE GREAT WATER', 70, 340);
+     text('BALLOON FIGHT', 220, 440);
+     image(start, 630,500, 600, 250); //Start button
+    }
 
-  if (scene2 == true) //Home Screen
-  {
-    textSize(125);
+    if (scene2 == true) //Home Screen
+    {
+      textSize(125);
+      textFont(xirod);
+      background(115);
+      fill(0);
+      text('CHOOSE YOUR', 250, 200);
+      text('CHARACTER', 350, 300);
+      textSize(50);
+      text('*use left and right arrow keys to move*', 100,400);
+      strokeWeight(5);
+      stroke(0);
+
+      fill(242,103,43);
+      rect(105,500,500,500);   //Tom Character Selection
+      image(tom, 105, 500, 500, 500);
+
+      fill(119,213,241);
+      rect(710, 500, 500,500); //Bubbles Character Selection
+      image(bubbles, 710, 500, 500, 500);
+
+      fill(127,193,67);
+      rect(1315,500,500,500);   //Morty Character Selection
+      image(morty, 1365, 550, 400, 400);
+    }
+
+    if (scene3 == true) //Tom Screen
+    {
+      scene2 = false; 
+      background(TJ);
+
+      fill(0);
+      strokeWeight(10);
+      stroke(255);
+      rect(50,550,350,100);  //Score Box
+      rect(50,670,350,100); //Lives Box
+      textSize(40);
+      noStroke();
+      textFont(xirod);
+      fill(255);
+      text('SCORE:'+score, 70, 600);//Score Text
+      text('LIVES:'+lives, 70, 730);//lives Text
+
+
+      drawSprites();  
+      gun();  //Function to move Tom left and Right
+      shotdisplay(); //Function to show "balloons"/"bullets"
+      enemy(); //Spawns "enemies" or Jerry, Mojo Jojo, and Evil Morty
+      
+    }
+    else if (scene4 == true) //Bubbles Screen
+    {
+    background(PPG);
+    }
+     else if (scene5 == true) //Morty Screen
+    {
+    background(RM);
+    }
+}
+  /////////////////
+console.log(lives); //Displays lives left in console
+
+if(lives<1) //If you run out of lives, then game ends
+{
+  end = true;
+  pause = true;
+}
+
+if(pause==true){
+    console.log(end);
+    if(end==true){    //If you run out of lives, Game Over displayed
+      textFont(xirod);
+      noStroke();
+      fill(255);
+      textAlign(CENTER, CENTER);
+      textSize(100);
+      text("GAME OVER", width/2, height/2-50);
+    }else{
+      textFont(xirod); //Still trying to figure out how to create paused function
+      noStroke();
+      fill(0);
+      textAlign(CENTER, CENTER);
+      textSize(60);
+      text("PAUSED", width/2, height/2-50);
+    }
     textFont(xirod);
-    background(115);
-    fill(0);
-    text('CHOOSE YOUR', 250, 300);
-    text('CHARACTER', 350, 400);
-    strokeWeight(5);
-    stroke(0);
+    textSize(60);
+    text("Press R to RESTART", width/2, (height/2)+30);
 
-    fill(242,103,43);
-    rect(105,500,500,500);   //Tom Character Selection
-    image(tom, 105, 500, 500, 500);
-
-    fill(119,213,241);
-    rect(710, 500, 500,500); //Bubbles Character Selection
-    image(bubbles, 710, 500, 500, 500);
-
-    fill(127,193,67);
-    rect(1315,500,500,500);   //Morty Character Selection
-    image(morty, 1365, 550, 400, 400);
+    if(keyWentDown('r')){ //Restarts game
+      
+      pause=false;
+      end=false;
+      score=0;
+      lives = 5;
+    }
   }
-
-  if (scene3 == true) //Tom Screen
-  {
-    scene2 = false; 
-    background(TJ);
-    // image(tom,710,700,500,500);
-    drawSprites();
-    // sprite.shoot();
-     gun();
-    shotdisplay(); 
-     
-   enemy();
-  
-  }
-  else if (scene4 == true) //Bubbles Screen
-  {
-  background(PPG);
-  }
-   else if (scene5 == true) //Morty Screen
-  {
-  background(RM);
-  }
-
 
 }
 
@@ -119,11 +166,11 @@ function mousePressed(){
   {
    if (((mouseX > 630) && (mouseX < 1230)) && ((mouseY > 500) && (mouseY < 750)))  //Start Button
    {
-        scene2 = true;
+        scene2 = true; //Character Selection Screen
    }
    if (((mouseX > 105)&&(mouseX < 605)) && ((mouseY > 500) && (mouseY < 1000 )))  //Tom Button
    {
-        scene3 = true;
+        scene3 = true; //Tom Screen
    }
   //  // // else if ((mouseX<  )&&(mouseX>)&& (mouseY<  )&&(mouseY>  ))  Bubble Button
   //  // {
@@ -137,64 +184,43 @@ function mousePressed(){
        // scene1 = false;
   }
 
-//   function score()
-//   {
-//     score = 0;
-//     strokeWeight(5);
-//     rect(105,900,200,100);
-//   }
-
 
 }
 
-// class balloon{
-  
-//   constructor(x,y){
-//     this.xpos = mouseX;
-//     this.ypot = mouseY;
-//      this.sprite = createSprite(1000,1000);
-//      sprite.addImage(loadImage("waterBalloon.png"));
-  
-// }
 
-
-//   shoot(){
-
-//   bullet.velocity.x = random(-5, 0);
-//   bullet.velocity.y = random(-5, 0);
-
-// }
-// }
-//////////////////////
 function bubble(x){
 
   this.x=x;
   this.y=40;
   this.display=function (){
-    if(dist(this.x,this.y,bulletx,bullety)<30){
+    if(jerry.overlap(bulletSprite)){
+       bullety = 1000;
        rem(i);
        }
     else{
   
    fill(255, 0, 0);
    noStroke();
+    
+    jerry.position.x = this.x;
+    jerry.position.y = this.y;
     ellipse(this.x,this.y,50,50);
 
-     jerry3 = createSprite(this.x, this.y, 100, 100);
-     jerry3.addImage(loadImage("jerry2.png"));
+    
 
     }
   }
 }
 
 
-function add(){
+function add(){   //Adds new enemies
+   score += 1;
    let x=random(100,1800);
    let bubbles=new bubble(x);
   arr.push(bubbles);
 }
 
-function gun(){
+function gun(){ //Character Moves around
  
     if (keyIsDown(LEFT_ARROW)) {
     
@@ -203,7 +229,7 @@ function gun(){
       
       }
       else{
-        x1-=10;
+        x1-=20;
       }
       
     }
@@ -213,7 +239,7 @@ function gun(){
         
       }
       else{
-        x1+=10;
+        x1+=20;
       }
     }
 
@@ -222,20 +248,24 @@ function gun(){
 
 
 
-function shotdisplay(){
+function shotdisplay(){ //Display bullets/balloons
   if(bullety<0){
     
     bullety=900;
+    lives -=1;
+    score -=2;
   }
   else{
-    bullety-=5;
+    bullety-=10;
   }
   bulletx=x1+200;
    strokeWeight(5);
    stroke(255);
    fill(88,153,209);
-  ellipse(bulletx,bullety,60);
-  //j = createSprite(bulletx,bullety, 10,10);
+  bulletSprite.position.x=bulletx;
+  bulletSprite.position.y=bullety;
+  drawSprites();
+   ellipse(bulletx,bullety,60);
 
 }
 
@@ -255,4 +285,6 @@ for(i=0;i< arr.length;i++){
   }
 
 }
+
+
 
