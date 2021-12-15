@@ -4,11 +4,15 @@ var scene3 = false;//Tom Screen
 var scene4 = false;//Bubble Screen
 var scene5 = false;//Morty Screen 
 let sceneCounter = 1; 
-var jerry;
+let enemies;
+let mojo;
+let jerry;
 let bg;
 var s;
-var score = -1;
-let lives = 5;
+let character;
+let evilmorty
+var score =1;
+let lives = 6;
 let bulletSprite;
 let end = false;
 let pause = false;
@@ -23,6 +27,8 @@ var bulletx=1000;
 var bullety=1000;
 
 function preload() {
+
+  //TOM & JERRY
   TJ = loadImage("tomBG.jpg"); //All Background Images TV Show settings 
   PPG = loadImage("PPG.jpeg");
   RM = loadImage("rick&morty.jpeg");
@@ -35,15 +41,29 @@ function preload() {
   xirod = loadFont("xirod.ttf"); //Title Font
   start = loadImage("startbutton.png");
 
+  jerry = loadImage("jerry2.png");
+  mojo = loadImage("mojo.png");
+  evilmorty = loadImage("evilmorty.png");
+
+
+
 }
 
 
 function setup() {
   createCanvas(1920,1080);
   background(115);
-  bulletSprite = createSprite(0,0, 50,50); //Creates Bullet Sprite behind water balloon
-   jerry = createSprite(0, 0, 100, 100); //Creates Jerry Sprite 
-    jerry.addImage(loadImage("jerry2.png"));
+
+  //TOM&JERRY
+  bulletSprite = createSprite(0,900, 10,10); //Creates Bullet Sprite behind water balloon
+  bulletSprite.addImage(loadImage("waterBalloon.png"));
+  enemies = createSprite(0, 0, 100, 100); //Creates Jerry Sprite 
+  enemies.addImage(jerry);
+
+  //POWERPUFF GIRLS 
+ 
+  //RICK & MORTY
+
 }
 
 
@@ -88,7 +108,10 @@ function draw() {
     if (scene3 == true) //Tom Screen
     {
       scene2 = false; 
+  
       background(TJ);
+      // tint(255,115);
+
 
       fill(0);
       strokeWeight(10);
@@ -102,30 +125,76 @@ function draw() {
       text('SCORE:'+score, 70, 600);//Score Text
       text('LIVES:'+lives, 70, 730);//lives Text
 
-
+       enemies.addImage(jerry);
+      console.log("jerry");
       drawSprites();  
-      gun();  //Function to move Tom left and Right
+      gun(tom);  //Function to move Tom left and Right
       shotdisplay(); //Function to show "balloons"/"bullets"
       enemy(); //Spawns "enemies" or Jerry, Mojo Jojo, and Evil Morty
       
     }
     else if (scene4 == true) //Bubbles Screen
     {
-    background(PPG);
+      scene2 = false;
+  
+      background(PPG);
+      // tint(255,115);
+
+      fill(0);
+      strokeWeight(10);
+      stroke(255);
+      rect(50,550,350,100);  //Score Box
+      rect(50,670,350,100); //Lives Box
+      textSize(40);
+      noStroke();
+      textFont(xirod);
+      fill(255);
+      text('SCORE:'+score, 70, 600);//Score Text
+      text('LIVES:'+lives, 70, 730);//lives Text
+
+       mojo.resize(100,100);
+      enemies.addImage(mojo);
+      console.log("mojo");
+      drawSprites();  
+      gun(bubbles);  
+      shotdisplay();
+      enemy(); 
+      
     }
      else if (scene5 == true) //Morty Screen
     {
     background(RM);
+    scene2 = false;
+
+      fill(0);
+      strokeWeight(10);
+      stroke(255);
+      rect(50,550,350,100);  //Score Box
+      rect(50,670,350,100); //Lives Box
+      textSize(40);
+      noStroke();
+      textFont(xirod);
+      fill(255);
+      text('SCORE:'+score, 70, 600);//Score Text
+      text('LIVES:'+lives, 70, 730);//lives Text
+
+      evilmorty.resize(110,100);
+      enemies.addImage(evilmorty);
+      drawSprites();  
+      gun(morty);  
+      shotdisplay();
+      enemy(); 
     }
 }
   /////////////////
-console.log(lives); //Displays lives left in console
+//console.log(lives); //Displays lives left in console
 
 if(lives<1) //If you run out of lives, then game ends
 {
   end = true;
   pause = true;
 }
+
 
 if(pause==true){
     console.log(end);
@@ -161,40 +230,63 @@ if(pause==true){
 
 
 
-function mousePressed(){
-  if (scene1 == true)
+function mouseClicked(){
+  console.log("scene1 = " + scene1);
+  console.log("scene2 = " + scene2);
+  console.log("scene3 = " + scene3);
+  console.log("scene4 = " + scene4);
+
+ 
+
+
+ if (scene2==true)
+ {
+   if (((mouseX > 105)&&(mouseX < 605)) && ((mouseY > 500) && (mouseY < 1000 )))  //Tom Button
+   {
+        scene3 = true; //Tom Screen
+        scene2 = false;
+   }
+   if (((mouseX > 710 )&&(mouseX < 1210)) && ((mouseY> 500 )&&(mouseY< 1000 )))  //Bubble Button
+   {
+        // scene1 = false; 
+        scene4 = true;
+        scene2 = false;
+        console.log("blehhhhh");
+   }
+    if (((mouseX > 1315) && (mouseX < 1815)) && ((mouseY>500) && (mouseY < 1000 )))  //Morty Button
+    {
+        scene5 = true;
+        scene2 = false;
+    }
+ }
+
+    if (scene1 == true)
   {
    if (((mouseX > 630) && (mouseX < 1230)) && ((mouseY > 500) && (mouseY < 750)))  //Start Button
    {
         scene2 = true; //Character Selection Screen
+        scene1 = false;
+        console.log("ahhhhh");
    }
-   if (((mouseX > 105)&&(mouseX < 605)) && ((mouseY > 500) && (mouseY < 1000 )))  //Tom Button
-   {
-        scene3 = true; //Tom Screen
-   }
-  //  // // else if ((mouseX<  )&&(mouseX>)&& (mouseY<  )&&(mouseY>  ))  Bubble Button
-  //  // {
-  //       //scene4 = true;
-  //  // }
-  //  // // else if ((mouseX<  )&&(mouseX>)&& (mouseY<  )&&(mouseY>  ))  Morty Button
-  //  // {
-  //       //scene5 = true;
-  //  // }
-   // Turn Scene1 Off 
-       // scene1 = false;
+ }
+ 
+   //Turn Scene1 Off 
+       //scene1 = false;
   }
 
 
-}
+
 
 
 function bubble(x){
 
-  this.x=x;
-  this.y=40;
+  enemies.position.x=x;
+  enemies.position.y=400;
   this.display=function (){
-    if(jerry.overlap(bulletSprite)){
-       bullety = 1000;
+    if((enemies.overlap(bulletSprite))&&(bulletSprite.velocity.y>0)){
+       
+       bulletSprite.position.y = 900;
+        bulletSprite.velocity.y = -27;
        rem(i);
        }
     else{
@@ -202,8 +294,8 @@ function bubble(x){
    fill(255, 0, 0);
    noStroke();
     
-    jerry.position.x = this.x;
-    jerry.position.y = this.y;
+    // jerry.position.x = this.x;
+    // jerry.position.y = this.y;
     ellipse(this.x,this.y,50,50);
 
     
@@ -220,7 +312,7 @@ function add(){   //Adds new enemies
   arr.push(bubbles);
 }
 
-function gun(){ //Character Moves around
+function gun(character){ //Character Moves around
  
     if (keyIsDown(LEFT_ARROW)) {
     
@@ -243,29 +335,36 @@ function gun(){ //Character Moves around
       }
     }
 
- image(tom,x1,y1,500,500);
+ image(character,x1,y1,500,500);
 }
 
 
 
 function shotdisplay(){ //Display bullets/balloons
-  if(bullety<0){
+  if(((bulletSprite.position.y>450)&&(bulletSprite.velocity.y>0))||(bulletSprite.position.y>height)){
     
-    bullety=900;
-    lives -=1;
-    score -=2;
+    bulletSprite.position.y = 900;
+    bulletSprite.velocity.y = -27;
+      lives -=1;
+      score -=2;
   }
   else{
-    bullety-=10;
+    bulletSprite.velocity.y+=.5;
   }
-  bulletx=x1+200;
+
+
+  
+
+  //console.log(bulletSprite.velocity.y);
+
+  bulletSprite.position.x=x1+200;
    strokeWeight(5);
    stroke(255);
    fill(88,153,209);
-  bulletSprite.position.x=bulletx;
-  bulletSprite.position.y=bullety;
+  // bulletSprite.position.x=bulletx;
+  // bulletSprite.position.y=bullety;
   drawSprites();
-   ellipse(bulletx,bullety,60);
+   //ellipse(bulletx,bullety,60);
 
 }
 
